@@ -1,0 +1,7 @@
+This code is intended to be used with the Dangershield for Arduino (by Zac Hoeken), and an Xbee wireless radio pair. The purpose of this code is to provide a training tool to learn the basic functions of the Arduino (digital and analog inputs/outputs).
+
+The Xbee radios are not required, but adds a wireless link between the Arduino and your PC. You do not have to connect the Xbee radios and the code will work the same, however this code was intended to be used on an Arduino Mega, because the Dangershield occupies pins 0 and 1, where the UART serial port 0 is located. To get around this, the Mega has 3 serial ports which allow you to connect the Xbee radios to any of them except port 0.
+
+The code is commented, so refer to it if you have questions.
+
+happy learning! 
