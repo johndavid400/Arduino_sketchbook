@@ -7,6 +7,7 @@ int pulse_val = 0;
 boolean reading = false;
 int ir_array[20];
 int n = 0;
+int z = 0;
 int speed_val = 0;
 int turn_val = 0;
 int m1_val = 0;
@@ -14,23 +15,23 @@ int m2_val = 0;
 
 // define pins for motor 1
 int m1_AHI = 2;
-int m1_ALI = 11;  
-int m1_BLI = 3;   // 12 on Ardiuno Mega
-int m1_BHI = 4; 
+int m1_ALI = 3;  
+int m1_BLI = 4;   // 12 on Ardiuno Mega
+int m1_BHI = 5; 
 
 // define pins for motor 2
 int m2_AHI = 8;
 int m2_ALI = 9;  
 int m2_BLI = 10;  
-int m2_BHI = 7;
+int m2_BHI = 11;
 
 void setup() {
   // change the PWM frequency for Timer 1 of Arduino 
   // pins 9 & 10 on standard Arduino or pins 11 and 12 on Arduino Mega
-  TCCR1B = TCCR1B & 0b11111000 | 0x01;
+  //TCCR1B = TCCR1B & 0b11111000 | 0x01;
   // change the PWM frequency for Timer 2 of Arduino 
   // pins 3 & 11 on standard Arduino or pins 9 & 10 on Arduino Mega 
-  TCCR2B = TCCR2B & 0b11111000 | 0x01;   
+  //TCCR2B = TCCR2B & 0b11111000 | 0x01;   
   // start serial monitor
   Serial.begin(9600);
   //led on arduino pin 13
@@ -82,9 +83,17 @@ void loop() {
       decode_button();
       limit_signal();
       write_motors();
+      z = 0;
+      //Serial.println(m1_val);
     }
     reading = false;
     //digitalWrite(ledPin, LOW);
+    z++;
+    if (z > 50){
+      m1_stop();
+      m2_stop();
+      z = 0;  
+    }
   }
 }
 
@@ -96,7 +105,7 @@ void write_motors(){
   else if (m1_val < 0){
     m1_reverse(-m1_val); 
   }
-   else {
+  else {
     m1_stop(); 
   }
   // check direction of m2_val and write appropriately
@@ -106,7 +115,7 @@ void write_motors(){
   else if (m2_val < 0){
     m2_reverse(-m2_val); 
   }
-   else {
+  else {
     m2_stop(); 
   }  
 }
@@ -134,39 +143,39 @@ void decode_turn(){
     if (ir_array[16] == 1){
       if (ir_array[17] == 1){
         // left 1
-        m1_val = speed_val - turn_val;
-        m2_val = speed_val + turn_val;
+        m2_val = speed_val - turn_val;
+        m1_val = speed_val + turn_val;
       }
       else {
         // left 2
-        m1_val = speed_val - (turn_val * 2);
-        m2_val = speed_val + (turn_val * 2);
+        m2_val = speed_val - (turn_val * 2);
+        m1_val = speed_val + (turn_val * 2);
       }
     }
     else {
       // left 3
-      m1_val = speed_val - (turn_val * 3);
-      m2_val = speed_val + (turn_val * 3);
+      m2_val = speed_val - (turn_val * 3);
+      m1_val = speed_val + (turn_val * 3);
     }
   }
   else {
     if (ir_array[16] == 1){
       if (ir_array[17] == 1){
         // right 3
-        m1_val = speed_val + (turn_val * 3);
-        m2_val = speed_val - (turn_val * 3);
+        m2_val = speed_val + (turn_val * 3);
+        m1_val = speed_val - (turn_val * 3);
       }
       else {
         // right 2
-        m1_val = speed_val + (turn_val * 2);
-        m2_val = speed_val - (turn_val * 2);
+        m2_val = speed_val + (turn_val * 2);
+        m1_val = speed_val - (turn_val * 2);
       }
     }
     else {
       if (ir_array[17] == 1){
         // right 3
-        m1_val = speed_val + turn_val;
-        m2_val = speed_val - turn_val;
+        m2_val = speed_val + turn_val;
+        m1_val = speed_val - turn_val;
       }
       else {
         // no turn
@@ -180,16 +189,16 @@ void decode_turn(){
 void decode_button(){
   // button
 
-  if (ir_array[14] == 1){
+    if (ir_array[14] == 1){
     if (ir_array[13] == 1){
       // left button
-      m1_val = -m1_val;
-      m2_val = -m2_val;
+      m1_val = speed_val;
+      m2_val = -speed_val;
     }
     else {
       // right button 
-      m1_val = m1_val * 2;
-      m2_val = m2_val * 2;
+      m1_val = -speed_val;
+      m2_val = speed_val;
     }
   }
 
@@ -199,7 +208,7 @@ void decode_button(){
 void decode_speed(){
   // speed 
 
-  if (ir_array[7] == 1){
+    if (ir_array[7] == 1){
     if (ir_array[8] == 1){
       if (ir_array[9] == 1){
         //speed 13
@@ -269,7 +278,7 @@ void decode_speed(){
       }
       else{
         //speed 1
-        speed_val = 20;
+        speed_val = 0;
       }
     }
   }
@@ -342,5 +351,6 @@ void motors_release(){
   digitalWrite(m2_BHI, LOW);
   digitalWrite(m2_BLI, LOW);  
 }
+
 
 
