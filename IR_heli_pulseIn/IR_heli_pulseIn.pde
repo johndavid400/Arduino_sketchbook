@@ -59,6 +59,9 @@ void loop() {
   }
 }
 
+void write_motors(){
+}
+
 void limit_signal(){
   if (m1_val > 255){
     m1_val = 255;
@@ -101,20 +104,20 @@ void decode_turn(){
     if (ir_array[16] == 1){
       if (ir_array[17] == 1){
         // right 3
-        m2_val = speed_val - (turn_val * 3);
         m1_val = speed_val + (turn_val * 3);
+        m2_val = speed_val - (turn_val * 3);
       }
       else {
         // right 2
-        m2_val = speed_val - (turn_val * 2);
         m1_val = speed_val + (turn_val * 2);
+        m2_val = speed_val - (turn_val * 2);
       }
     }
     else {
       if (ir_array[17] == 1){
         // right 3
-        m2_val = speed_val - turn_val;
         m1_val = speed_val + turn_val;
+        m2_val = speed_val - turn_val;
       }
       else {
         // no turn
