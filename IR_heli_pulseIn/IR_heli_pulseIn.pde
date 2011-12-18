@@ -12,12 +12,41 @@ int turn_val = 0;
 int m1_val = 0;
 int m2_val = 0;
 
+// define pins for motor 1
+int m1_AHI = 2;
+int m1_ALI = 11;  
+int m1_BLI = 3;   // 12 on Ardiuno Mega
+int m1_BHI = 4; 
+
+// define pins for motor 2
+int m2_AHI = 8;
+int m2_ALI = 9;  
+int m2_BLI = 10;  
+int m2_BHI = 7;
+
 void setup() {
+  // change the PWM frequency for Timer 1 of Arduino 
+  // pins 9 & 10 on standard Arduino or pins 11 and 12 on Arduino Mega
+  TCCR1B = TCCR1B & 0b11111000 | 0x01;
+  // change the PWM frequency for Timer 2 of Arduino 
+  // pins 3 & 11 on standard Arduino or pins 9 & 10 on Arduino Mega 
+  TCCR2B = TCCR2B & 0b11111000 | 0x01;   
+  // start serial monitor
   Serial.begin(9600);
   //led on arduino pin 13
   pinMode(ledPin, OUTPUT);
   // IR signal from helicopter controller
   pinMode(pulse_pin, INPUT); 
+  // set motor pins as outputs
+  pinMode(m1_AHI, OUTPUT);
+  pinMode(m1_ALI, OUTPUT);
+  pinMode(m1_BHI, OUTPUT);
+  pinMode(m1_BLI, OUTPUT);
+
+  pinMode(m2_AHI, OUTPUT);
+  pinMode(m2_ALI, OUTPUT);
+  pinMode(m2_BHI, OUTPUT);
+  pinMode(m2_BLI, OUTPUT);
 }
 
 void pulse(){
@@ -60,6 +89,26 @@ void loop() {
 }
 
 void write_motors(){
+  // check direction of m1_val and write appropriately
+  if (m1_val > 0){
+    m1_forward(m1_val); 
+  }
+  else if (m1_val < 0){
+    m1_reverse(-m1_val); 
+  }
+   else {
+    m1_stop(); 
+  }
+  // check direction of m2_val and write appropriately
+  if (m2_val > 0){
+    m2_forward(m2_val); 
+  }
+  else if (m2_val < 0){
+    m2_reverse(-m2_val); 
+  }
+   else {
+    m2_stop(); 
+  }  
 }
 
 void limit_signal(){
@@ -226,6 +275,72 @@ void decode_speed(){
   }
 }
 
+void m1_reverse(int x){
+  // function for motor 1 reverse
+  digitalWrite(m1_BHI, LOW);
+  digitalWrite(m1_ALI, LOW);
+  digitalWrite(m1_AHI, HIGH);
+  analogWrite(m1_BLI, x);  
+}
 
+
+void m1_forward(int x){
+  // function for motor 1 forward
+  digitalWrite(m1_AHI, LOW);
+  digitalWrite(m1_BLI, LOW);
+  digitalWrite(m1_BHI, HIGH);
+  analogWrite(m1_ALI, x);  
+}
+
+
+void m1_stop(){
+  // function for motor 1 stop
+  digitalWrite(m1_ALI, LOW);
+  digitalWrite(m1_BLI, LOW);  
+  digitalWrite(m1_AHI, HIGH); // electric brake using high-side fets
+  digitalWrite(m1_BHI, HIGH); // electric brake using high-side fets
+}
+
+
+void m2_forward(int y){
+  // function for motor 2 forward
+  digitalWrite(m2_AHI, LOW);
+  digitalWrite(m2_BLI, LOW);
+  digitalWrite(m2_BHI, HIGH);
+  analogWrite(m2_ALI, y);
+}
+
+
+void m2_reverse(int y){
+  // function for motor 2 reverse
+  digitalWrite(m2_BHI, LOW);
+  digitalWrite(m2_ALI, LOW);
+  digitalWrite(m2_AHI, HIGH);
+  analogWrite(m2_BLI, y);  
+}
+
+
+void m2_stop(){
+  // function for motor 2 stop
+  digitalWrite(m2_ALI, LOW);
+  digitalWrite(m2_BLI, LOW);  
+  digitalWrite(m2_AHI, HIGH);  // electric brake using high-side fets
+  digitalWrite(m2_BHI, HIGH);  // electric brake using high-side fets
+}
+
+
+void motors_release(){
+  // function to release both motors (no electric brake)
+  // release all motors by opening every switch. The bot will coast or roll if on a hill.
+  digitalWrite(m1_AHI, LOW);
+  digitalWrite(m1_ALI, LOW);
+  digitalWrite(m1_BHI, LOW);
+  digitalWrite(m1_BLI, LOW); 
+
+  digitalWrite(m2_AHI, LOW);
+  digitalWrite(m2_ALI, LOW);
+  digitalWrite(m2_BHI, LOW);
+  digitalWrite(m2_BLI, LOW);  
+}
 
 
