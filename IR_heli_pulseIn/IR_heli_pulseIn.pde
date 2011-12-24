@@ -187,9 +187,9 @@ void decode_turn(){
     }
     else {
       if (ir_array[17] == 1){
-        // right 3
+        // right 1
         m2_val = speed_val;
-        m1_val = -speed_val;
+        m1_val = speed_val / 2;
       }
       else {
         // no turn
