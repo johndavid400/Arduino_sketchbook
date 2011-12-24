@@ -2,7 +2,7 @@
 // JDW 2011
 
 int ledPin = 13; // optional LED on pin 13
-int pulse_pin = 21; // connect IR receiver - I used pin 21, but you can change this if using a regular Arduino, any pin will work.
+int pulse_pin = 4; // connect IR receiver - I used pin 21, but you can change this if using a regular Arduino, any pin will work.
 int pulse_val = 0;
 boolean reading = false;
 int ir_array[20];
@@ -36,8 +36,8 @@ void pulse(){
 }
 
 void booleanize(){
-  // this function changes the pulse readings of 500 microseconds and 1100 microseconds (the only 2 pulse lengths I could detect) into 1 or 0 boolean values.
-  if (pulse_val > 750){
+  // this function changes the pulse readings of 500 microseconds and 1100 microseconds (the only 2 pulse lengths I could detect) into  0 boolean values.
+    if (pulse_val > 750){
     pulse_val = 1;
   }
   else {
@@ -45,7 +45,7 @@ void booleanize(){
   }
 }
 
-void loop(){
+void loop() {
   // get a pulse reading from the IR sensor
   pulse();
   // now check to see if it is above 0
@@ -63,15 +63,16 @@ void loop(){
     // if this is the first 0 reading after a set of pulses, go ahead and close the set out and read the pulses
     if (reading == true){
       // check to make sure we got at least 18 of the 20 pulses
-      if (n > 18)
+      if (n > 18){
         n = 0;
         // read and decode pulses
         decode_speed();
-        // check for turn
-        decode_turn();
+        speed_val = speed_val / 2;
         // check for button
-        decode_button();
+        decode_turn();
         // check and limit the signal so no bad value is written to the H-bridge (above 255)
+        decode_button();
+        // check for turn
         limit_signal();
         // finally, write the values to the motors
         write_motors();
@@ -87,6 +88,7 @@ void loop(){
       m2_stop();
       z = 0;
     }
+
   }
 }
 
@@ -136,39 +138,39 @@ void decode_turn(){
     if (ir_array[16] == 1){
       if (ir_array[17] == 1){
         // left 1
-        m2_val = speed_val - turn_val;
-        m1_val = speed_val + turn_val;
+        m2_val = speed_val / 2;
+        m1_val = speed_val * 2;
       }
       else {
         // left 2
-        m2_val = speed_val - (turn_val * 2);
-        m1_val = speed_val + (turn_val * 2);
+        m2_val = 0;
+        m1_val = speed_val;
       }
     }
     else {
       // left 3
-      m2_val = speed_val - (turn_val * 3);
-      m1_val = speed_val + (turn_val * 3);
+      m2_val = -speed_val;
+      m1_val = speed_val;
     }
   }
   else {
     if (ir_array[16] == 1){
       if (ir_array[17] == 1){
         // right 3
-        m2_val = speed_val + (turn_val * 3);
-        m1_val = speed_val - (turn_val * 3);
+        m2_val = speed_val * 2;
+        m1_val = speed_val / 2;
       }
       else {
         // right 2
-        m2_val = speed_val + (turn_val * 2);
-        m1_val = speed_val - (turn_val * 2);
+        m2_val = speed_val;
+        m1_val = 0;
       }
     }
     else {
       if (ir_array[17] == 1){
         // right 3
-        m2_val = speed_val + turn_val;
-        m1_val = speed_val - turn_val;
+        m2_val = speed_val;
+        m1_val = -speed_val;
       }
       else {
         // no turn
@@ -182,26 +184,24 @@ void decode_turn(){
 void decode_button(){
   // button
 
-  if (ir_array[14] == 1){
+    if (ir_array[14] == 1){
     if (ir_array[13] == 1){
       // left button
-      m1_val = -speed_val;
-      m2_val = -speed_val;
+      m1_val = -m1_val;
+      m2_val = -m2_val;
     }
     else {
       // right button 
-      m1_val = -speed_val;
-      m2_val = speed_val;
+      m1_val = -m1_val;
+      m2_val = -m2_val;
     }
   }
-
-
 }
 
 void decode_speed(){
   // speed 
 
-  if (ir_array[7] == 1){
+    if (ir_array[7] == 1){
     if (ir_array[8] == 1){
       if (ir_array[9] == 1){
         //speed 13
@@ -301,3 +301,5 @@ void m2_stop(){
   digitalWrite(m2_A, LOW);
   digitalWrite(m2_B, LOW);
 }
+
+

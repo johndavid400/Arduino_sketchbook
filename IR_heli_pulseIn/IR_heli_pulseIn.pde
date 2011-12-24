@@ -84,7 +84,7 @@ void loop() {
     // if this is the first 0 reading after a set of pulses, go ahead and close the set out and read the pulses
     if (reading == true){
       // check to make sure we got at least 18 of the 20 pulses
-      if (n > 18)
+      if (n > 18){
         n = 0;
         // read and decode pulses
         decode_speed();
