@@ -4,7 +4,7 @@
 // JDW 2011
 
 int ledPin = 13; // optional LED on pin 13
-int pulse_pin = 21; // connect IR receiver - I used pin 21, but you can change this if using a regular Arduino, any pin will work.
+int pulse_pin = 14; // connect IR receiver - I used pin 21, but you can change this if using a regular Arduino, any pin will work.
 int pulse_val = 0;
 boolean reading = false;
 int ir_array[20];
@@ -71,6 +71,7 @@ void loop() {
   pulse();
   // now check to see if it is above 0
   if (pulse_val > 0){
+    digitalWrite(ledPin, HIGH);
     // if so, lets start reading the pulses
     reading = true;
     booleanize();
@@ -109,6 +110,7 @@ void loop() {
       z = 0;
     }
   }
+  digitalWrite(ledPin, LOW);
 }
 
 void write_motors(){
@@ -151,45 +153,43 @@ void limit_signal(){
 
 void decode_turn(){
   // turn
-  turn_val = speed_val / 3;
-
   if (ir_array[15] == 1){
     if (ir_array[16] == 1){
       if (ir_array[17] == 1){
         // left 1
-        m2_val = speed_val - turn_val;
-        m1_val = speed_val + turn_val;
+        m2_val = speed_val / 2;
+        m1_val = speed_val;
       }
       else {
         // left 2
-        m2_val = speed_val - (turn_val * 2);
-        m1_val = speed_val + (turn_val * 2);
+        m2_val = 0;
+        m1_val = speed_val * 2;
       }
     }
     else {
       // left 3
-      m2_val = speed_val - (turn_val * 3);
-      m1_val = speed_val + (turn_val * 3);
+      m2_val = -speed_val;
+      m1_val = speed_val;
     }
   }
   else {
     if (ir_array[16] == 1){
       if (ir_array[17] == 1){
         // right 3
-        m2_val = speed_val + (turn_val * 3);
-        m1_val = speed_val - (turn_val * 3);
+        m2_val = speed_val;
+        m1_val = -speed_val;
       }
       else {
         // right 2
-        m2_val = speed_val + (turn_val * 2);
-        m1_val = speed_val - (turn_val * 2);
+        m2_val = speed_val * 2;
+        m1_val = 0;
       }
     }
     else {
       if (ir_array[17] == 1){
         // right 3
-        m2_val = speed_val + turn_val;
-        m1_val = speed_val - turn_val;
+        m2_val = speed_val;
+        m1_val = -speed_val;
       }
       else {
         // no turn
@@ -206,13 +206,13 @@ void decode_button(){
   if (ir_array[14] == 1){
     if (ir_array[13] == 1){
       // left button
-      m1_val = speed_val;
-      m2_val = -speed_val;
+      m1_val = -m1_val;
+      m2_val = -m2_val;
     }
     else {
       // right button 
-      m1_val = -speed_val;
-      m2_val = speed_val;
+      m1_val = -m1_val;
+      m2_val = -m2_val;
     }
   }
 
