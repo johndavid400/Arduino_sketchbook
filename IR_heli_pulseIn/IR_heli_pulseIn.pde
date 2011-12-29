@@ -4,7 +4,7 @@
 // JDW 2011
 
 int ledPin = 13; // optional LED on pin 13
-int pulse_pin = 14; // connect IR receiver - I used pin 21, but you can change this if using a regular Arduino, any pin will work.
+int pulse_pin = 2; // connect IR receiver - I used pin 21, but you can change this if using a regular Arduino, any pin will work.
 int pulse_val = 0;
 boolean reading = false;
 int ir_array[20];
@@ -16,10 +16,10 @@ int m1_val = 0;
 int m2_val = 0;
 
 // define pins for motor 1 - these are standard 4-quadrant H-bridge control pins, you can change these if using a different motor-controller
-int m1_AHI = 2;
-int m1_ALI = 3;
-int m1_BLI = 4;   // 12 on Ardiuno Mega
-int m1_BHI = 5;
+int m1_AHI = 4;
+int m1_ALI = 5;
+int m1_BLI = 6;   // 12 on Ardiuno Mega
+int m1_BHI = 7;
 
 // define pins for motor 2
 int m2_AHI = 8;
@@ -99,6 +99,14 @@ void loop() {
         write_motors();
         // another counter variable used for error correction
         z = 0;
+        
+        Serial.print("speed: ");
+        Serial.print(speed_val);
+        Serial.print("m1/m2: ");
+        Serial.print(m1_val);
+        Serial.print("/");
+        Serial.println(m2_val);
+        
       }
     }
     reading = false;
