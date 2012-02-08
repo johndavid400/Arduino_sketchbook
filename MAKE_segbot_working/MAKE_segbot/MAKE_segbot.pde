@@ -71,7 +71,7 @@ int output;
 
 // potentiometer variables
 int steer_val;
-int steer_range = 7;
+int steer_range = 21;
 int steer_reading;
 int gain_reading;
 int gain_val;
@@ -185,8 +185,8 @@ void update_motor_speed(){
       motor_out = map(output, -250, 250, -gain_val, gain_val); // map the angle
     }
     // assign steering bias
-    motor_1_out = motor_out + (steer_val);
-    motor_2_out = motor_out - (steer_val);
+    motor_1_out = motor_out + (steer_val / 3);
+    motor_2_out = motor_out - (steer_val / 3);
     // test for and correct invalid values
     if(motor_1_out > 64){
       motor_1_out = 64;
@@ -228,7 +228,7 @@ void time_stamp(){
 void serial_print_stuff(){
   // Debug with the Serial monitor
   
-  
+  /*
   Serial.print("A: ");
   //Serial.print(accel_angle); // print the accelerometer angle
   //Serial.print(accel_reading);
@@ -244,29 +244,29 @@ void serial_print_stuff(){
   Serial.print("F: ");
   Serial.print(angle); // print the filtered angle
   Serial.print(" ");
-
+*/
   Serial.print("T: ");
   Serial.print(cycle_time); // print the loop cycle time
-  Serial.println(" ");
+  Serial.print(" ");
   /*
    Serial.print("o/m: ");
    Serial.print(output);
    Serial.print("/");
    Serial.print(motor_out);
-   Serial.println("  "); 
-   
-   Serial.print("steer_val: ");
+   Serial.print("  "); 
+   */
+   Serial.print("s_val: ");
    Serial.print(steer_val);
    Serial.print("  "); 
    
-   Serial.print("steer_reading: ");
+   Serial.print("s_read: ");
    Serial.print(steer_reading);
    Serial.print("  "); 
    
    Serial.print("m1/m2: ");
-   Serial.print(m1_speed);
+   Serial.print(m1_speed - 64);
    Serial.print("/");
-   Serial.println(m2_speed);
-   */
+   Serial.println(m2_speed - 192);
+
 }
 
