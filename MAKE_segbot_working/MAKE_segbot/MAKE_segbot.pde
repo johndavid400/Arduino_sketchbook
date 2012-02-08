@@ -1,7 +1,8 @@
-// DIY Seg-bot
+// MAKE magazine DIY Seg-bot
 // JD Warren 2012
-// Arduino Duemilanove (tested)
-// Sparkfun Razor 6 DOF IMU - only using X axis from accelerometer and gyroscope 
+// Arduino Uno R2
+// Sparkfun Dual-axis gyroscope #SEN-09990, using LPR530AL gyroscope chip
+// Sparkfun Triple-axis accelerometer #SEN-09652, using MMA7361 accelerometer chip
 // Steering potentiometer used to steer bot
 // Gain potentiometer used to set max speed (sensitivity) 
 // Engage switch (button) used to enable motors
@@ -18,13 +19,14 @@
 SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
 
 // Name Analog input pins
+int accel_pin = 0;
 int gyro_pin = 1;
-int accel_pin = 5;
-int steeringPot = 3;
-int gainPot = 2;
+int gainPot = 3;
+int steeringPot = 4;
 
 // Name Digital I/O pins
-int engage_switch = 4;
+int sleep_pin = 8;
+int engage_switch = 7;
 int ledPin = 13;
 
 // value to hold the final angle 
@@ -36,17 +38,18 @@ float accel_weight = 0.02;
 // accelerometer values
 int accel_reading;
 int accel_raw;
-int accel_offset = 511;
+int accel_offset = 500; //511 by default
 float accel_angle;
 float accel_scale = 0.01;
 
 // gyroscope values
-int gyro_offset = 385;
+int gyro_offset = 388; //391 by default
 int gyro_raw;
 int gyro_reading;
 float gyro_rate;
 float gyro_scale = 0.01; // 0.01 by default
 float gyro_angle;
+int timerVal = 70;
 float loop_time = 0.07;
 
 // engage button variables
@@ -83,6 +86,9 @@ void setup(){
   pinMode(txPin, OUTPUT);
   // set the data rate for the SoftwareSerial port
   mySerial.begin(9600);
+  // engage the accelerometer by bringing the sleep_pin HIGH
+  pinMode(sleep_pin, OUTPUT);
+  digitalWrite(sleep_pin, HIGH);
   // set the engage_switch pin as an Input
   pinMode(engage_switch, INPUT);
   // enable the Arduino internal pull-up resistor on the engage_switch pin.
@@ -113,9 +119,9 @@ void loop(){
 void sample_accel(){
   // Read and convert accelerometer value
   accel_reading = analogRead(accel_pin);
-  //accel_raw = accel_reading - accel_offset;
+  accel_raw = accel_reading - accel_offset;
   //accel_raw = constrain(accel_raw, -90, 90);
-  accel_raw = map(accel_reading, 380, 640, -90, 90);
+  accel_raw = map(accel_raw, 325, -350, 90, -90);
   accel_angle = (float)(accel_raw * accel_scale);
 }
 
@@ -135,7 +141,7 @@ void calculate_angle(){
 void read_pots(){
   // Read and convert potentiometer values
   // Steering potentiometer
-  steer_reading = analogRead(steeringPot); // We want to coerce this into a range between -1 and 1, and set that to steer_val
+  steer_reading = analogRead(steeringPot); // We want to coerce this into a range between -x and x, and set that to steer_val
   steer_val = map(steer_reading, 0, 1023, steer_range, -steer_range);
   if (angle == 0.00){
     gain_reading = 0;
@@ -171,7 +177,7 @@ void auto_level(){
 void update_motor_speed(){
   // Update the motors
   if (engage == true){
-    if (angle < -0.4 || angle > 0.4){
+    if (angle < -0.45 || angle > 0.45){
       motor_out = 0;
     }
     else {
@@ -211,7 +217,7 @@ void update_motor_speed(){
 
 void time_stamp(){
   // check to make sure it has been exactly 50 milliseconds since the last recorded time-stamp 
-  while((millis() - last_cycle) < 50){
+  while((millis() - last_cycle) < timerVal){
     delay(1);
   }
   // once the loop cycle reaches 50 mS, reset timer value and proceed
@@ -221,21 +227,27 @@ void time_stamp(){
 
 void serial_print_stuff(){
   // Debug with the Serial monitor
-  Serial.print("Accel: ");
-  Serial.print(accel_angle);  // print the accelerometer angle
-  Serial.print("  ");
+  
+  
+  Serial.print("A: ");
+  //Serial.print(accel_angle); // print the accelerometer angle
+  //Serial.print(accel_reading);
+  Serial.print(accel_angle);
+  Serial.print(" ");
 
-  Serial.print("Gyro: ");
-  Serial.print(gyro_angle);  // print the gyro angle
-  Serial.print("  ");
+  Serial.print("G: ");
+  //Serial.print(gyro_angle); // print the gyro angle
+  //Serial.print(gyro_reading);
+  Serial.print(gyro_angle);
+  Serial.print(" ");
 
-  Serial.print("Filtered: ");
-  Serial.print(angle);   // print the filtered angle
-  Serial.print("  ");
+  Serial.print("F: ");
+  Serial.print(angle); // print the filtered angle
+  Serial.print(" ");
 
-  Serial.print(" time: ");
+  Serial.print("T: ");
   Serial.print(cycle_time); // print the loop cycle time
-  Serial.println("    ");
+  Serial.println(" ");
   /*
    Serial.print("o/m: ");
    Serial.print(output);

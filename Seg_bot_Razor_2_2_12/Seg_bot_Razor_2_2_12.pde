@@ -41,7 +41,7 @@ float accel_angle;
 float accel_scale = 0.01;
 
 // gyroscope values
-int gyro_offset = 385;
+int gyro_offset = 391;
 int gyro_raw;
 int gyro_reading;
 float gyro_rate;
