@@ -10,14 +10,6 @@
 // In no way to I take responisibility for what you may do with this code! Use at your own risk.
 // Test thoroughly with wheels off the ground before attempting to ride - Wear a helmet!
 
-// use SoftwareSerial library to communicate with the Sabertooth motor-controller
-#include <SoftwareSerial.h>
-// define pins used for SoftwareSerial communication
-#define rxPin 2
-#define txPin 3
-// set up a new SoftwareSerial port, named "mySerial" or whatever you want to call it.
-SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
-
 // Name Analog input pins
 int accel_pin = 0;
 int gyro_pin = 1;
@@ -71,7 +63,7 @@ int output;
 
 // potentiometer variables
 int steer_val;
-int steer_range = 21;
+int steer_range = 10;
 int steer_reading;
 int gain_reading;
 int gain_val;
@@ -81,11 +73,6 @@ int gain_val;
 void setup(){
   // Start the Serial monitor at 9600bps
   Serial.begin(9600);
-  // define pinModes for tx and rx:
-  pinMode(rxPin, INPUT);
-  pinMode(txPin, OUTPUT);
-  // set the data rate for the SoftwareSerial port
-  mySerial.begin(9600);
   // engage the accelerometer by bringing the sleep_pin HIGH
   pinMode(sleep_pin, OUTPUT);
   digitalWrite(sleep_pin, HIGH);
@@ -113,7 +100,7 @@ void loop(){
   // check the loop cycle time and add a delay as necessary
   time_stamp();
   // Debug with the Serial monitor
-  serial_print_stuff();
+  //serial_print_stuff();
 }
 
 void sample_accel(){
@@ -144,7 +131,7 @@ void read_pots(){
   steer_reading = analogRead(steeringPot); // We want to coerce this into a range between -x and x, and set that to steer_val
   steer_val = map(steer_reading, 0, 1023, steer_range, -steer_range);
   if (angle == 0.00){
-    gain_reading = 0;
+    steer_val = 0;
   }
   // Gain potentiometer
   gain_reading = analogRead(gainPot);
@@ -185,8 +172,8 @@ void update_motor_speed(){
       motor_out = map(output, -250, 250, -gain_val, gain_val); // map the angle
     }
     // assign steering bias
-    motor_1_out = motor_out + (steer_val / 3);
-    motor_2_out = motor_out - (steer_val / 3);
+    motor_1_out = motor_out + (steer_val);
+    motor_2_out = motor_out - (steer_val);
     // test for and correct invalid values
     if(motor_1_out > 64){
       motor_1_out = 64;
@@ -211,8 +198,12 @@ void update_motor_speed(){
     m2_speed = 0;
   }
   // write the final output values to the Sabertooth via SoftwareSerial
-  mySerial.print(m1_speed, BYTE);
-  mySerial.print(m2_speed, BYTE);
+  //mySerial.print(m1_speed, BYTE);
+  //mySerial.print(m2_speed, BYTE);
+  
+  Serial.print(m1_speed, BYTE);
+  Serial.print(m2_speed, BYTE);
+  
 }
 
 void time_stamp(){
@@ -240,33 +231,16 @@ void serial_print_stuff(){
   //Serial.print(gyro_reading);
   Serial.print(gyro_angle);
   Serial.print(" ");
+*/
 
   Serial.print("F: ");
   Serial.print(angle); // print the filtered angle
   Serial.print(" ");
-*/
+
   Serial.print("T: ");
   Serial.print(cycle_time); // print the loop cycle time
-  Serial.print(" ");
-  /*
-   Serial.print("o/m: ");
-   Serial.print(output);
-   Serial.print("/");
-   Serial.print(motor_out);
-   Serial.print("  "); 
-   */
-   Serial.print("s_val: ");
-   Serial.print(steer_val);
-   Serial.print("  "); 
-   
-   Serial.print("s_read: ");
-   Serial.print(steer_reading);
-   Serial.print("  "); 
-   
-   Serial.print("m1/m2: ");
-   Serial.print(m1_speed - 64);
-   Serial.print("/");
-   Serial.println(m2_speed - 192);
+  Serial.println(" ");
+
 
 }
 
