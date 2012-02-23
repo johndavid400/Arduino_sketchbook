@@ -201,8 +201,8 @@ void update_motor_speed(){
   //mySerial.print(m1_speed, BYTE);
   //mySerial.print(m2_speed, BYTE);
   
-  Serial.print(m1_speed, BYTE);
-  Serial.print(m2_speed, BYTE);
+  //Serial.print(m1_speed, BYTE);
+  //Serial.print(m2_speed, BYTE);
   
 }
 
@@ -231,7 +231,7 @@ void serial_print_stuff(){
   //Serial.print(gyro_reading);
   Serial.print(gyro_angle);
   Serial.print(" ");
-*/
+
 
   Serial.print("F: ");
   Serial.print(angle); // print the filtered angle
@@ -239,8 +239,15 @@ void serial_print_stuff(){
 
   Serial.print("T: ");
   Serial.print(cycle_time); // print the loop cycle time
-  Serial.println(" ");
+  Serial.print(" ");
+*/
+  Serial.print("gyro_offset: ");
+  Serial.print(gyro_reading); // print the filtered angle
+  Serial.print(" ");
 
+  Serial.print("accel_offset: ");
+  Serial.print(accel_reading); // print the loop cycle time
+  Serial.println(" ");
 
 }
 
