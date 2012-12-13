@@ -1,0 +1,160 @@
+// Automated Chicken coop door
+// jdw - may 2012
+
+// motor wires attached to pins D9 and D10
+// bottom pot = A5, top pot = A4
+// bottom button = D3, top button = 2, switch = 4
+// top IR sensor = , bottom IR sensor = 
+// light sensor = 
+
+int m1a = 9;
+int m1b = 10;
+
+int ir_top = 0;
+int ir_bottom = 1;
+
+int ldr = 2;
+
+int pot1 = 5;
+int pot2 = 4;
+
+int button_red = 2;
+int button_red_val;
+int button_black = 3;
+int button_black_val;
+int toggle_switch = 4;
+int toggle_switch_val;
+
+int light_val;
+int light_sum = 0;
+int ir1_val;
+int ir1_sum = 0;
+int ir2_val;
+int ir2_sum = 0;
+
+int dawn_dusk = 25;
+int ir_threshold = 150;
+boolean closed = 0;
+boolean daytime = 0;
+
+void setup(){
+  Serial.begin(9600);
+ 
+  pinMode(m1a, OUTPUT);
+  pinMode(m1b, OUTPUT);
+ 
+  pinMode(ir_top, INPUT);
+  pinMode(ir_bottom, INPUT);
+ 
+  pinMode(pot1, INPUT);
+  pinMode(pot2, INPUT);
+ 
+  pinMode(ldr, INPUT);
+ 
+  pinMode(button_red, INPUT);
+  pinMode(button_black, INPUT);
+  pinMode(toggle_switch, INPUT);
+ 
+  door_stop();
+  delay(500);
+}
+
+void loop(){
+
+  read_sensors();
+
+  if (door == 1){
+    if (light_val < dawn_dusk){
+      door_down;
+      delay(100);
+    } 
+    while (ir_sensor > ir_threshold){
+      door_down;
+      read_ir_sensors();
+      door = 0;
+    }
+    door_stop();
+  }
+  else {
+    if (light_val > dawn_dusk){
+      door_up;
+      delay(100);
+    }
+    while (ir_sensor > ir_threshold){
+      door_up;
+      read_ir_sensors();
+      door = 1;
+    }
+    door_stop();    
+  }
+}
+
+void read_ir_sensors(){
+  for (int x = 0; x < 10; x++){
+    ir1_sum += analogRead(ir_top);
+    delay(10);
+  }
+  ir1_val = ir1_sum / 10;
+  ir1_sum = 0;
+
+  for (int x = 0; x < 10; x++){
+    ir2_sum += analogRead(ir_bottom);
+    delay(10);
+  }
+  ir2_val = ir2_sum / 10;
+  ir2_sum = 0;
+}
+
+void read_ldr(){
+  for (int x = 0; x < 10; x++){
+    light_sum += analogRead(ldr);
+    delay(10);
+  }
+  light_val = light_sum / 10;
+  light_sum = 0;
+
+  if (light_val > dawn_dusk){
+    daytime = true;
+  }
+  else {
+    daytime = false;
+  }
+}
+
+void read_sensors(){
+
+  read_ir_sensors();
+
+  read_ldr();
+
+  toggle_switch_val = digitalRead(toggle_switch);
+  button_red_val = digitalRead(button_red);
+  button_black_val = digitalRead(button_black);
+}
+
+void door_up{
+  digitalWrite(m1a, LOW);
+  digitalWrite(m1b, HIGH); 
+}
+
+void door_down{
+  digitalWrite(m1b, LOW);
+  digitalWrite(m1a, HIGH); 
+}
+
+void door_stop(){
+  digitalWrite(m1a, LOW);
+  digitalWrite(m1b, LOW);
+}
+
+
+
+
+
+
+
+
+
+
+
+
