@@ -1,6 +1,12 @@
 // Drive a unipolar stepper motor using (4) Tip122 BJT transistors and (4) 1k resistors.
 // instead of using the standard digitalWrite, I used port manipulation for the increased switching speed times.
 // 
+
+int s1 = 4;
+int s3 = 5;
+int s2 = 6;
+int s4 = 7;
+
 int delayTime = 100;
 int deadtime = 10;
 int x_steps;
@@ -26,17 +32,26 @@ void loop() {
 void motor_steps(int steps){
   if (steps > 0){
     for (int x = 0; x < steps; x++){
-      // turn on pin 7 
-      PORTD = B10000000;
+      digitalWrite(s1, HIGH);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, LOW);
+      digitalWrite(s4, LOW);
       delay(deadtime);
-      // turn on pin 6    
-      PORTD = B01000000;
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s3, LOW);
+      digitalWrite(s4, LOW);
       delay(deadtime);
-      // turn on pin 5  
-      PORTD = B00100000;
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, HIGH);
+      digitalWrite(s4, LOW);
       delay(deadtime);
-      // turn on pin 4
-      PORTD = B00010000;
+      digitalWrite(s1, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s3, LOW);
+      digitalWrite(s4, HIGH);
+      delay(deadtime);
       Serial.println(x);
     }
     delay(delayTime);
@@ -44,17 +59,26 @@ void motor_steps(int steps){
   }
   else {
     for (int x = 0; x > steps; x--){
-      // turn on pin 4
-      PORTD = B00010000;
+      digitalWrite(s4, HIGH);
+      digitalWrite(s3, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s1, LOW);
       delay(deadtime);
-      // turn on pin 5  
-      PORTD = B00100000;
+      digitalWrite(s4, LOW);
+      digitalWrite(s3, HIGH);
+      digitalWrite(s2, LOW);
+      digitalWrite(s1, LOW);
       delay(deadtime);
-      // turn on pin 6  
-      PORTD = B01000000;
+      digitalWrite(s4, LOW);
+      digitalWrite(s3, LOW);
+      digitalWrite(s2, HIGH);
+      digitalWrite(s1, LOW);
       delay(deadtime);
-      // turn on pin 7  
-      PORTD = B10000000;
+      digitalWrite(s4, LOW);
+      digitalWrite(s3, LOW);
+      digitalWrite(s2, LOW);
+      digitalWrite(s1, HIGH);
+      delay(deadtime);
       Serial.println(x);
     }
     delay(delayTime);
@@ -64,8 +88,10 @@ void motor_steps(int steps){
 }    
 
 void motor_stop(){
-  // turn all ports OFF
-  PORTD = B00000000;
+  digitalWrite(s4, LOW);
+  digitalWrite(s3, LOW);
+  digitalWrite(s2, LOW);
+  digitalWrite(s1, LOW);
 }
 
 
