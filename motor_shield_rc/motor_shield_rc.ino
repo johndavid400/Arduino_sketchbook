@@ -16,8 +16,8 @@ int disable_2 = 8;
 int threshold = 10;
 
 // declare R/C inputs
-int rc1 = 2;
-int rc2 = 4;
+int rc1 = 14;
+int rc2 = 15;
 
 int rc1_val = 0;
 int rc2_val = 0;
@@ -44,6 +44,7 @@ void setup(){
 void loop(){
  read_rc();
  write_motors();
+ serial_print_stuff();
 }
 
 void read_rc(){
@@ -55,6 +56,21 @@ void read_rc(){
  rc2_speed = map(rc2_val, 1000, 2000, -255, 255);
 }
 
+void serial_print_stuff(){
+ // print values for rc1
+ Serial.print("  RC1 Raw: ");
+ Serial.print(rc1_val);
+ Serial.print("  RC1 Adj: ");
+ Serial.print(rc1_speed);
+ // print values for rc1
+ Serial.print("  RC2 Raw: ");
+ Serial.print(rc2_speed);
+ Serial.print("  RC2 Adj: ");
+ Serial.print(rc2_val);
+ // print new line
+ Serial.println("");
+}
+
 void write_motors(){
   if(rc1_speed > threshold){
     m1_forward();
@@ -63,9 +79,9 @@ void write_motors(){
     m1_reverse();
   }
   else{
-    m1_stop(); 
+    m1_stop();
   }
-  
+
   if(rc2_speed > threshold){
     m2_forward();
   }
@@ -73,8 +89,8 @@ void write_motors(){
     m2_reverse();
   }
   else{
-    m2_stop(); 
-  }  
+    m2_stop();
+  }
 }
 
 void m1_forward(){
@@ -99,9 +115,7 @@ void m2_forward(){
   digitalWrite(dir_2, LOW);
   analogWrite(pwm_2, rc2_speed);
 }
-
-void m2_reverse(){
-  digitalWrite(disable_2, LOW);
+void m2_reverse(){ digitalWrite(disable_2, LOW);
   digitalWrite(dir_2, HIGH);
   analogWrite(pwm_2, -rc2_speed);
 }
