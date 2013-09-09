@@ -1,5 +1,5 @@
 
-// Connect RC 1 to D2 and RC 2 to D4.
+// Connect RC 1 to A0 and RC 2 to A1.
 // Mount Arduino Motor Controller Shield
 
 
