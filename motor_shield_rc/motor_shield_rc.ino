@@ -85,7 +85,7 @@ void read_rc(){
  rc1_val = pulseIn(rc1, HIGH, 20000);
  rc1_speed = map(rc1_val, 1000, 2000, -255, 255);
  // read and map rc2
- rc2_val = pulseIn(rc1, HIGH, 20000);
+ rc2_val = pulseIn(rc2, HIGH, 20000);
  rc2_speed = map(rc2_val, 1000, 2000, -255, 255);
 }
 
