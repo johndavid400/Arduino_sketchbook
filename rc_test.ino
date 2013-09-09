@@ -3,6 +3,12 @@
 int rc1 = 14;
 int rc2 = 15;
 
+int rc1_val = 0;
+int rc2_val = 0;
+
+int rc1_speed = 0;
+int rc2_speed = 0;
+
 void setup(){
   Serial.begin(9600);
   // setup input pins for R/C
