@@ -26,6 +26,7 @@ int rc1_speed = 0;
 int rc2_speed = 0;
 
 void setup(){
+  Serial.begin(9600);
   // setup pins for motor controller
   pinMode(OUTPUT, dir_1);
   pinMode(OUTPUT, dir_2);
