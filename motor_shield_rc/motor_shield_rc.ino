@@ -40,6 +40,38 @@ void setup(){
   // setup input pins for R/C
   pinMode(INPUT, rc1);
   pinMode(INPUT, rc2);
+
+  test_motors();
+  delay(1000);
+}
+
+void test_motors(){
+  rc1_speed = 128;
+  rc2_speed = 128;
+  m1_forward();
+  m2_forward();
+  delay(1000);
+  m1_stop();
+  m2_stop();
+  delay(1000);
+  m1_reverse();
+  m2_reverse();
+  delay(1000);
+  m1_stop();
+  m2_stop();
+  delay(1000);
+  m1_reverse();
+  m2_forward();
+  delay(1000);
+  m1_stop();
+  m2_stop();
+  delay(1000);
+  m1_forward();
+  m2_reverse();
+  delay(1000);
+  m1_stop();
+  m2_stop();
+  delay(1000);
 }
 
 void loop(){
