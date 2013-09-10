@@ -12,13 +12,13 @@ int pwm_2 = 11;
 int disable_2 = 8;
 
 // create a threshold for neutral values - the higher this value, the larger the neutral band will be
-int threshold = 20;
+int threshold = 30;
 
 // set values for high and low R/C raw values
-int rc1_low = 1250;
-int rc1_high = 1730;
-int rc2_low = 1250;
-int rc2_high = 1750;
+int rc1_low = 1200;
+int rc1_high = 1660;
+int rc2_low = 1120;
+int rc2_high = 1650;
 
 // declare R/C inputs
 int rc1 = 16;  // use A2
@@ -48,59 +48,49 @@ void setup(){
 }
 
 void loop(){
- read_rc();
- limit_speed();
- write_motors();
- serial_print_stuff();
+  read_rc();
+  limit_speed();
+  write_motors();
+  serial_print_stuff();
 }
 
 void read_rc(){
- // read and map rc1
- rc1_val = pulseIn(rc1, HIGH, 20000);
- if(rc1_val > 0){
-   rc1_speed = map(rc1_val, rc1_low, rc1_high, -255, 255);
- }
- else{
-   rc1_speed = 0;
- }
- // read and map rc2
- rc2_val = pulseIn(rc2, HIGH, 20000);
- if(rc2_val > 0){
-   rc2_speed = map(rc2_val, rc2_low, rc2_high, -255, 255);
- }
- else{
-   rc2_speed = 0;
- }
+  // read and map rc1
+  rc1_val = pulseIn(rc1, HIGH, 20000);
+  rc1_speed = map(rc1_val, rc1_low, rc1_high, -255, 255);
+  // read and map rc2
+  rc2_val = pulseIn(rc2, HIGH, 20000);
+  rc2_speed = map(rc2_val, rc2_low, rc2_high, -255, 255);
 }
 
 void serial_print_stuff(){
- // print values for rc1
- Serial.print(" RC1 Raw: ");
- Serial.print(rc1_val);
- Serial.print(" RC1 Adj: ");
- Serial.print(rc1_speed);
- // print values for rc1
- Serial.print(" RC2 Raw: ");
- Serial.print(rc2_val);
- Serial.print(" RC2 Adj: ");
- Serial.print(rc2_speed);
- // print new line
- Serial.println("");
+  // print values for rc1
+  Serial.print(" RC1 Raw: ");
+  Serial.print(rc1_val);
+  Serial.print(" RC1 Adj: ");
+  Serial.print(rc1_speed);
+  // print values for rc1
+  Serial.print(" RC2 Raw: ");
+  Serial.print(rc2_val);
+  Serial.print(" RC2 Adj: ");
+  Serial.print(rc2_speed);
+  // print new line
+  Serial.println("");
 }
 
 void limit_speed(){
- if(rc1_speed > 255){
-   rc1_speed = 255;
- }
- else if(rc1_speed < -255){
-   rc1_speed = -255; 
- }
- if(rc2_speed > 255){
-   rc2_speed = 255;
- }
- else if(rc2_speed < -255){
-   rc2_speed = -255; 
- }
+  if(rc1_speed > 255){
+    rc1_speed = 255;
+  }
+  else if(rc1_speed < -255){
+    rc1_speed = -255; 
+  }
+  if(rc2_speed > 255){
+    rc2_speed = 255;
+  }
+  else if(rc2_speed < -255){
+    rc2_speed = -255; 
+  }
 }
 
 void write_motors(){
@@ -151,5 +141,6 @@ void m2_reverse(){
 void m2_stop(){
   digitalWrite(pwm_2, LOW);
 }
+
 
 
