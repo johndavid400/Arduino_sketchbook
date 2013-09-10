@@ -9,17 +9,26 @@ Servo rr;
 Servo fl;
 Servo fr;
 
+int front_left = 4;
+
 void setup(){
   Serial.begin(9600);
+
+  pinMode(front_left, OUTPUT);
+
   rl.attach(4);
   rr.attach(5);
   fl.attach(6);
   fr.attach(7);
+  delay(200);
 }
 
 void loop(){
-  forward(50);
-  delay(20);
+
+  digitalWrite(front_left, HIGH);
+  delayMicroseconds(1300)
+  digitalWrite(front_left, LOW);
+
 }
 
 // functions for movement
@@ -75,3 +84,13 @@ void glide_right(int spd){
   fl.write(y_pos);
   fr.write(x_pos);
 }
+
+void stop(){
+  int val = 89;
+  rl.write(val);
+  rr.write(val);
+  fl.write(val);
+  fr.write(val);
+}
+
+
