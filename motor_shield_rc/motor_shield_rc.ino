@@ -15,10 +15,10 @@ int disable_2 = 8;
 int threshold = 30;
 
 // set values for high and low R/C raw values
-int rc1_low = 1200;
-int rc1_high = 1660;
-int rc2_low = 1120;
-int rc2_high = 1650;
+int rc1_low = 920;
+int rc1_high = 1850;
+int rc2_low = 940;
+int rc2_high = 1820;
 
 // declare R/C inputs
 int rc1 = 16;  // use A2
@@ -29,6 +29,9 @@ int rc2_val = 0;
 
 int rc1_speed = 0;
 int rc2_speed = 0;
+
+int distance_reading = 0;
+int distance_threshold = 30;
 
 void setup(){
   Serial.begin(9600);
@@ -45,14 +48,26 @@ void setup(){
   // setup input pins for R/C
   pinMode(INPUT, rc1);
   pinMode(INPUT, rc2);
+  delay(10000);
 }
 
 void loop(){
+  gather();
   read_rc();
   limit_speed();
   write_motors();
   serial_print_stuff();
 }
+
+void gather(){
+  int sample_count = 3;
+  int distance_sum = 0;
+  for(int x = 0; x < sample_count; x++){
+    distance_sum += analogRead(4);
+  }
+  distance_reading = distance_sum / sample_count;
+}
+
 
 void read_rc(){
   // read and map rc1
@@ -64,6 +79,9 @@ void read_rc(){
 }
 
 void serial_print_stuff(){
+  // print value for ultrasonic sensor
+  Serial.print("Distance: ");
+  Serial.print(distance_reading);
   // print values for rc1
   Serial.print(" RC1 Raw: ");
   Serial.print(rc1_val);
@@ -95,7 +113,12 @@ void limit_speed(){
 
 void write_motors(){
   if(rc1_speed > threshold){
-    m1_forward();
+    if (distance_reading > distance_threshold){
+      m1_forward();
+    }
+    else {
+      m1_stop(); 
+    }
   }
   else if(rc1_speed < -threshold){
     m1_reverse();
@@ -105,7 +128,12 @@ void write_motors(){
   }
 
   if(rc2_speed > threshold){
-    m2_forward();
+    if (distance_reading > distance_threshold){
+      m2_forward();
+    }
+    else {
+      m2_stop(); 
+    }
   }
   else if(rc2_speed < -threshold){
     m2_reverse();
@@ -133,7 +161,7 @@ void m2_forward(){
   digitalWrite(dir_2, LOW);
   analogWrite(pwm_2, rc2_speed);
 }
-void m2_reverse(){ 
+void m2_reverse(){
   digitalWrite(dir_2, HIGH);
   analogWrite(pwm_2, -rc2_speed);
 }
