@@ -1,8 +1,8 @@
-// Connect RC 1 to A0 and RC 2 to A1.
+// Connect RC 1 to D2 and RC 2 to D4.
 // Mount Arduino Motor Controller Shield
 
 
-// declare motor pins
+// declare motor pins for Arduino Motor Shield from Radio Shack
 int dir_1 = 12;
 int pwm_1 = 3;
 int disable_1 = 9;
@@ -15,14 +15,14 @@ int disable_2 = 8;
 int threshold = 30;
 
 // set values for high and low R/C raw values
-int rc1_low = 920;
-int rc1_high = 1850;
-int rc2_low = 940;
-int rc2_high = 1820;
+int rc1_low = 1000;
+int rc1_high = 2000;
+int rc2_low = 1000;
+int rc2_high = 2000;
 
 // declare R/C inputs
-int rc1 = 16;  // use A2
-int rc2 = 17;  // use A3
+int rc1 = 2;  // use D2
+int rc2 = 4;  // use D4
 
 int rc1_val = 0;
 int rc2_val = 0;
@@ -31,7 +31,7 @@ int rc1_speed = 0;
 int rc2_speed = 0;
 
 int distance_reading = 0;
-int distance_threshold = 30;
+int distance_threshold = 40;
 
 void setup(){
   Serial.begin(9600);
@@ -52,22 +52,11 @@ void setup(){
 }
 
 void loop(){
-  gather();
   read_rc();
   limit_speed();
   write_motors();
   serial_print_stuff();
 }
-
-void gather(){
-  int sample_count = 3;
-  int distance_sum = 0;
-  for(int x = 0; x < sample_count; x++){
-    distance_sum += analogRead(4);
-  }
-  distance_reading = distance_sum / sample_count;
-}
-
 
 void read_rc(){
   // read and map rc1
@@ -113,12 +102,7 @@ void limit_speed(){
 
 void write_motors(){
   if(rc1_speed > threshold){
-    if (distance_reading > distance_threshold){
-      m1_forward();
-    }
-    else {
-      m1_stop(); 
-    }
+    m1_forward();
   }
   else if(rc1_speed < -threshold){
     m1_reverse();
@@ -128,12 +112,7 @@ void write_motors(){
   }
 
   if(rc2_speed > threshold){
-    if (distance_reading > distance_threshold){
-      m2_forward();
-    }
-    else {
-      m2_stop(); 
-    }
+    m2_forward();
   }
   else if(rc2_speed < -threshold){
     m2_reverse();
@@ -169,6 +148,3 @@ void m2_reverse(){
 void m2_stop(){
   digitalWrite(pwm_2, LOW);
 }
-
-
-
