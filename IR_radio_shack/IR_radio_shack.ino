@@ -45,13 +45,16 @@ void loop() {
   else {
     if (reading == true){
       decode_signal();
-      //z = 0;
+      z = 0;
       //serial_print_stuff();
     }
     reading = false;
     str = String("");
-    //z++;
-    //if (z > 50){z = 0;}
+    z++;
+    if (z > 10){
+      z = 0;
+      stop();
+    }
   }
   digitalWrite(ledPin, LOW);
 }
