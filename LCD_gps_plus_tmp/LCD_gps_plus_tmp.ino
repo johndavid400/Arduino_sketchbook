@@ -33,7 +33,7 @@ void loop(){
     while (ss.available() > 0){
        gps.encode(ss.read());     
     }
-    if (gps.altitude.isUpdated()){
+    if (gps.location.isUpdated()){
       Serial.println(gps.location.lat(), 6);
       lcd.clear(); 
       lcd.setCursor(0, 0);
