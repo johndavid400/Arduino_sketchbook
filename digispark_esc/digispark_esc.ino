@@ -20,32 +20,46 @@ int rc_min = 1000;
 int rc_max = 2000;
 
 void setup(){
-  Serial.begin(9600);
   pinMode(INPUT, rc1);
   pinMode(INPUT, rc2);
   pinMode(OUTPUT, m1_dir);
   pinMode(OUTPUT, m1_pwm);
   pinMode(OUTPUT, m2_dir);
   pinMode(OUTPUT, m2_pwm);
+  for (int z = 0; z < 20; z ++){
+    digitalWrite(1, HIGH);
+    delay(20);
+    digitalWrite(1, LOW);
+    delay(20);
+  }
+  digitalWrite(m1_dir, LOW);
+  digitalWrite(m1_pwm, LOW);
+  digitalWrite(m2_dir, LOW);
+  digitalWrite(m2_pwm, LOW);
 }
 
 void loop(){
   read_pulses();
-  set_motors();
+  //set_motors();
 }
 
 void read_pulses(){
   rc1_raw = pulseIn(rc1, HIGH, 20000);
   rc2_raw = pulseIn(rc2, HIGH, 20000);
-  rc1_val = map(rc1_raw, rc_min, rc_max, -max_spd, max_spd);
-  rc2_val = map(rc2_raw, rc_min, rc_max, -max_spd, max_spd);
-  if (rc1_val > 255){ rc1_val = 255; }
-  else if (rc1_val < -255){ rc1_val = -255; }
-  if (rc2_val > 255){ rc2_val = 255; }
-  else if (rc2_val < -255){ rc2_val = -255; }
+  if (rc1_raw > 0){
+    rc1_val = map(rc1_raw, rc_min, rc_max, -max_spd, max_spd);
+    if (rc1_val > 255){ rc1_val = 255; }
+    else if (rc1_val < -255){ rc1_val = -255; }
+  }
+  if (rc2_raw > 0){
+    rc2_val = map(rc2_raw, rc_min, rc_max, -max_spd, max_spd);
+    if (rc2_val > 255){ rc2_val = 255; }
+    else if (rc2_val < -255){ rc2_val = -255; }
+  }
 }
 
 void set_motors(){
+  
   if (rc1_val > deadband){ m1_forward(rc1_val); }
   else if (rc1_val < -deadband){ m1_reverse(-rc1_val); }
   else { m1_stop(); }
@@ -65,6 +79,7 @@ void m1_reverse(int x){
 }
 void m1_stop(){
   digitalWrite(m1_pwm, LOW);
+  digitalWrite(m1_dir, LOW);
 }
 
 void m2_forward(int x){
@@ -77,13 +92,7 @@ void m2_reverse(int x){
 }
 void m2_stop(){
   digitalWrite(m2_pwm, LOW);
+  digitalWrite(m2_dir, LOW);
 }
 
-void serial_print_stuff(){
- Serial.print("  RC1 Raw: ");
- Serial.print(rc1_val);
- Serial.print("  RC2 Raw: ");
- Serial.print(rc2_val);
- Serial.println("");
-}
 
